@@ -1,0 +1,18 @@
+appId: com.yourcompany.claims-scanner
+productName: Claims Scanner
+directories:
+  output: build
+files:
+  - src/**/*
+  - package.json
+win:
+  target: nsis
+  icon: src/assets/icon.ico
+mac:
+  target: dmg
+  icon: src/assets/icon.icns
+  category: public.app-category.business
+linux:
+  target: AppImage
+  icon: src/assets/icon.png
+  category: Office

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claims Scanner</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>📄 Claims Scanner</h1>
+        <span id="statusBadge" class="status-badge">●</span>
+        <span id="statusText">Initializing...</span>
+      </div>
+      <div class="header-right">
+        <span id="versionText" class="version">v1.0.0</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="dashboard">
+      📊 Dashboard
+    </button>
+    <button class="tab-btn" data-tab="queue">
+      📋 Queue <span id="queueCount" class="badge">0</span>
+    </button>
+    <button class="tab-btn" data-tab="logs">
+      📝 Logs
+    </button>
+    <button class="tab-btn" data-tab="settings">
+      ⚙️ Settings
+    </button>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- Dashboard Tab -->
+    <div id="dashboard" class="tab-content active">
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📤</div>
+          <div class="stat-info">
+            <div class="stat-value" id="todayUploads">0</div>
+            <div class="stat-label">Today's Uploads</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-info">
+            <div class="stat-value" id="successRate">100%</div>
+            <div class="stat-label">Success Rate</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-info">
+            <div class="stat-value" id="queueSize">0</div>
+            <div class="stat-label">In Queue</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">❌</div>
+          <div class="stat-info">
+            <div class="stat-value" id="failedCount">0</div>
+            <div class="stat-label">Failed</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Watching Status -->
+      <div class="watching-panel">
+        <div class="panel-header">
+          <h2>📁 Folder Monitoring</h2>
+          <button id="toggleWatchBtn" class="btn btn-primary">Pause</button>
+        </div>
+        <div class="panel-content">
+          <div class="info-row">
+            <span class="label">Status:</span>
+            <span id="watchingStatus" class="value">Watching</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Folder:</span>
+            <span id="watchedFolder" class="value">Not set</span>
+            <button id="openFolderBtn" class="btn btn-sm">Open</button>
+          </div>
+          <div class="info-row">
+            <span class="label">Last File:</span>
+            <span id="lastFile" class="value">None</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="activity-panel">
+        <div class="panel-header">
+          <h2>🔔 Recent Activity</h2>
+          <button id="clearActivityBtn" class="btn btn-sm">Clear</button>
+        </div>
+        <div id="activityList" class="activity-list">
+          <div class="empty-state">No recent activity</div>
+        </div>
+      </div>
+
+      <!-- All-Time Stats -->
+      <div class="lifetime-stats">
+        <h2>📈 All-Time Statistics</h2>
+        <div class="stats-grid-small">
+          <div class="stat-item">
+            <span class="label">Total Uploads:</span>
+            <span id="lifetimeTotal" class="value">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="label">Total Success:</span>
+            <span id="lifetimeSuccess" class="value">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="label">Total Failed:</span>
+            <span id="lifetimeFailed" class="value">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="label">Total Size:</span>
+            <span id="lifetimeSize" class="value">0 MB</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Queue Tab -->
+    <div id="queue" class="tab-content">
+      <div class="panel-header">
+        <h2>📋 Upload Queue</h2>
+        <div class="header-actions">
+          <button id="clearCompletedBtn" class="btn btn-sm">Clear Completed</button>
+          <button id="refreshQueueBtn" class="btn btn-sm">Refresh</button>
+        </div>
+      </div>
+
+      <div class="queue-filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="pending">Pending</button>
+        <button class="filter-btn" data-filter="uploading">Uploading</button>
+        <button class="filter-btn" data-filter="failed">Failed</button>
+        <button class="filter-btn" data-filter="completed">Completed</button>
+      </div>
+
+      <div id="queueList" class="queue-list">
+        <div class="empty-state">No files in queue</div>
+      </div>
+    </div>
+
+    <!-- Logs Tab -->
+    <div id="logs" class="tab-content">
+      <div class="panel-header">
+        <h2>📝 Application Logs</h2>
+        <div class="header-actions">
+          <select id="logLevelFilter" class="select">
+            <option value="all">All Levels</option>
+            <option value="info">Info</option>
+            <option value="warn">Warning</option>
+            <option value="error">Error</option>
+          </select>
+          <button id="clearLogsBtn" class="btn btn-sm">Clear</button>
+          <button id="openLogFolderBtn" class="btn btn-sm">Open Log Folder</button>
+        </div>
+      </div>
+
+      <div id="logContainer" class="log-container">
+        <div class="empty-state">No logs to display</div>
+      </div>
+    </div>
+
+    <!-- Settings Tab -->
+    <div id="settings" class="tab-content">
+      <div class="settings-container">
+
+        <section class="settings-section">
+          <h2>📁 Folder Settings</h2>
+          <div class="form-group">
+            <label for="watchedFolderInput">Watched Folder:</label>
+            <div class="input-group">
+              <input type="text" id="watchedFolderInput" class="input" readonly>
+              <button id="selectFolderBtn" class="btn">Browse...</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="ignoreExistingFiles">
+              Ignore existing files on startup
+            </label>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <h2>⚙️ Upload Settings</h2>
+          <div class="form-group">
+            <label for="maxRetries">Maximum Retry Attempts:</label>
+            <input type="number" id="maxRetries" class="input" min="1" max="10" value="3">
+          </div>
+          <div class="form-group">
+            <label for="retryDelay">Retry Delay (seconds):</label>
+            <input type="number" id="retryDelay" class="input" min="1" max="60" value="5">
+          </div>
+          <div class="form-group">
+            <label for="maxFileSize">Maximum File Size (MB):</label>
+            <input type="number" id="maxFileSize" class="input" min="1" max="500" value="50">
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <h2>🚀 Startup Settings</h2>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="autoStart">
+              Start watching on application launch
+            </label>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="startMinimized">
+              Start application minimized to tray
+            </label>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <h2>🔌 Connection Settings</h2>
+          <div class="form-group">
+            <label for="apiUrl">API URL:</label>
+            <input type="text" id="apiUrl" class="input" placeholder="http://localhost:3000/api">
+          </div>
+          <div class="form-group">
+            <button id="testConnectionBtn" class="btn btn-primary">Test Connection</button>
+            <span id="connectionStatus" class="connection-status"></span>
+          </div>
+        </section>
+
+        <div class="settings-actions">
+          <button id="saveSettingsBtn" class="btn btn-primary">Save Settings</button>
+          <button id="resetSettingsBtn" class="btn">Reset to Defaults</button>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Toast Notifications -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
