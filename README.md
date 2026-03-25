@@ -1,22 +1,18 @@
 # Claims Scanner Folder Watcher
 
-A desktop application that automatically monitors a folder for scanned claim documents, uploads them to Supabase Storage, and creates workflow records in your claims management system.
+A desktop application that automatically monitors a folder for scanned claim documents, uploads them via SFTP, and creates workflow records in your claims management system.
 
 ## 🚀 Quick Start
 
-### 1. Set Up Supabase
+### 1. Set Up PostgreSQL & SFTP
 
-1. **Create Storage Bucket**:
-   - Go to your [Supabase Dashboard](https://supabase.com/dashboard)
-   - Navigate to **Storage** in the sidebar
-   - Click **Create bucket**
-   - Name it `claim-documents`
-   - Set it to **Public** (so uploaded files can be accessed)
+1. **Set Up File Storage**:
+   - Configure a folder on your VPS or SFTP server
+   - Gather your host, username, password, and port details
 
 2. **Set Up Database**:
-   - Go to **SQL Editor** in your Supabase dashboard
-   - Copy and paste the contents of `database-schema.sql`
-   - Click **Run** to create the tables
+   - Connect to your standard PostgreSQL database via pgAdmin or psql
+   - Execute the contents of `database-schema.sql` to create the initial tables
 
 ### 2. Set Up API Server
 
@@ -24,12 +20,12 @@ A desktop application that automatically monitors a folder for scanned claim doc
    ```bash
    npm install --package-lock-only  # Use the api-package.json
    # Or manually install:
-   npm install express cors @supabase/supabase-js dotenv nodemon
+   npm install express cors pg dotenv nodemon
    ```
 
 2. **Configure API Environment**:
-   - Copy your `.env` file or create a new one for the API
-   - Ensure it has `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`
+   - Copy your `.env.api` file or create a new one for the API
+   - Ensure it has your standard Postgres `DATABASE_URL`
 
 3. **Start API Server**:
    ```bash
@@ -48,7 +44,7 @@ A desktop application that automatically monitors a folder for scanned claim doc
    ```
 
 2. **Configure Environment**:
-   - The `.env` file is already configured with your Supabase credentials
+   - The `.env` file needs to be configured with your SFTP credentials (`SFTP_HOST`, etc)
    - Update `API_URL` if your API is running on a different port
 
 3. **Replace Icons** (Optional):
@@ -66,7 +62,7 @@ A desktop application that automatically monitors a folder for scanned claim doc
 
 1. **File Detection**: Monitors `C:\ScannedClaims\` for new files
 2. **Validation**: Checks file size, type, and extracts barcode from filename
-3. **Upload**: Sends files to Supabase Storage
+3. **Upload**: Sends files to the VPS via SFTP
 4. **Database**: Creates records in your database via the API
 5. **Organization**: Moves processed files to subfolders
 
@@ -118,8 +114,9 @@ npm run build
 ## 🔧 Configuration
 
 ### Environment Variables
-- `SUPABASE_URL`: Your Supabase project URL
-- `SUPABASE_ANON_KEY`: Supabase anonymous key (for client)
+- `SFTP_HOST`: Your SFTP server URL or IP
+- `SFTP_USERNAME`: Your SFTP username
+- `SFTP_PASSWORD`: Your SFTP password
 - `API_URL`: Your API server URL
 - `WATCHED_FOLDER`: Folder to monitor
 - `UPLOAD_USER`: Identifier for uploads
@@ -169,7 +166,7 @@ Creates a document record and workflow entry.
 ### Common Issues
 1. **"Cannot find module 'electron'"**: Install Electron globally or use `npx electron`
 2. **API connection failed**: Ensure API server is running on correct port
-3. **Supabase upload failed**: Check bucket name and permissions
+3. **SFTP upload failed**: Check server host, credentials, and path permissions
 4. **File not detected**: Check folder permissions and file types
 
 ### Logs
